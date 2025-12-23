@@ -34,8 +34,10 @@ export function Button(props: ButtonProps) {
   const variantClasses = styles[styleType];
   const classes = `${baseClasses} ${variantClasses} ${className}`.trim();
 
-  if ("href" in rest && rest.href) {
-    const { href, ...anchorProps } = rest;
+  const isLink = (p: ButtonProps): p is ButtonAsLink => "href" in p && typeof p.href === "string";
+
+  if (isLink({ children, className, styleType, ...rest })) {
+    const { href, ...anchorProps } = rest as ButtonAsLink;
     return (
       <Link href={href} className={classes} {...anchorProps}>
         {children}
@@ -43,8 +45,10 @@ export function Button(props: ButtonProps) {
     );
   }
 
+  const buttonProps = rest as ButtonHTMLAttributes<HTMLButtonElement>;
+
   return (
-    <button type="button" className={classes} {...rest}>
+    <button type={buttonProps.type ?? "button"} className={classes} {...buttonProps}>
       {children}
     </button>
   );
